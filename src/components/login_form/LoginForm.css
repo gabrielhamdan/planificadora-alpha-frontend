@@ -1,0 +1,12 @@
+.auth-bg {
+    background-color: #7a8896;
+}
+
+.custom-placeholder::placeholder {
+    color: white !important;
+    opacity: .5 !important;
+}
+
+.logo {
+    max-width: 60%;
+}
