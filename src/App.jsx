@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import RequireAuth from './components/require_auth/RequireAuth';
 import Home from './pages/home/Home';
+import CadastroAluno from './pages/home/CadastroAluno';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
           {/* rotas que requerem autenticação */}
           <Route element={<RequireAuth />} >
             <Route path='home' element={<Home />} />
+            <Route path='aluno/:id' element={<CadastroAluno />} />
           </Route>
         </Route>
       </Routes>

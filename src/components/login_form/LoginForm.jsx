@@ -30,7 +30,7 @@ export default function LoginForm() {
         setErrMsg('');
     }, [usuario, senha]);
 
-    const submitLogin = async e => {
+    const handlerSubmit = async e => {
         e.preventDefault();
 
         try {
@@ -68,7 +68,7 @@ export default function LoginForm() {
 
                                         <p ref={errRef} className="errmsg text-white-50 mb-3">{errMsg}</p>
 
-                                        <Form onSubmit={submitLogin}>
+                                        <Form onSubmit={handlerSubmit}>
                                             <Form.Group className="form-outline form-white mb-4" >
                                                 <Form.Control className='form-control form-control-lg bg-dark text-white border-light custom-placeholder'
                                                     type="text"
