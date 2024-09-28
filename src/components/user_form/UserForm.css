@@ -10,3 +10,7 @@
 .logo {
     max-width: 60%;
 }
+
+.form-group-container {
+    text-align: left !important;
+}
