@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Alunos() {
     const [alunos, setAlunos] = useState();
@@ -31,14 +31,21 @@ export default function Alunos() {
         }
     }, []);
 
+    const location = useLocation();
+
+    const handleClick = () => {
+        // Armazena a URL da página atual antes de navegar
+        localStorage.setItem('previousPage', location.pathname);
+    };
+
     return (
         <article>
             <h2>Alunos</h2>
+            <Link to={"/aluno/0"} onClick={handleClick}>Novo aluno</Link>
             {alunos?.length
                 ? (
                     <ul>
                         {/* HACK: testando novo aluno, passando id 0 */}
-                        <li><Link to={"/aluno/0"}>Novo aluno</Link></li>
                         {
                             alunos.map((aluno, key) => {
                                 return <li key={key}><Link to={`/aluno/${aluno?.id}`}>{aluno?.nome}</Link></li>

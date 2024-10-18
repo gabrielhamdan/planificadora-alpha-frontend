@@ -41,8 +41,9 @@ export default function LoginForm(props) {
             );
 
             const token = response?.data?.token;
+            const id = response?.data?.id;
 
-            setAuth({ usuario, senha, token });
+            setAuth({ usuario, senha, token, id });
             setUsuario('');
             setSenha('');
             navigate(from, { replace: true });

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useNavigate, useParams } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 export default function CadastroAluno() {
+    const { auth } = useAuth();
     const axiosPrivate = useAxiosPrivate();
     const { id } = useParams();
     const ehNovoAluno = id && id === "0";
@@ -18,7 +20,8 @@ export default function CadastroAluno() {
             endereco: '',
             nivel: 'Pós-Graduado',
             situacao: 'ALUNO',
-            objetivoAprendizado: ''
+            objetivoAprendizado: '',
+            professorId: auth.id
         }
     );
 
@@ -39,8 +42,9 @@ export default function CadastroAluno() {
                 if (err.name !== 'CanceledError')
                     console.error(err);
             }
+
         }
-         
+
         getAluno();
 
         return () => {
@@ -63,29 +67,34 @@ export default function CadastroAluno() {
         if (!ehNovoAluno)
             setAluno((prevAluno) => ({
                 ...prevAluno,
-                id: {id}
+                id: { id }
             }));
 
-        const response = await axiosPrivate.post('/alunos', 
-            JSON.stringify(aluno), 
+        const response = await axiosPrivate.post('/alunos',
+            JSON.stringify(aluno),
             {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true
             }
         );
 
-        console.log(response);
-
-        if (response.status == 200) // TODO: lógica para que o "voltar" retorne para página anterior (e. g., /home) com useLocation
+        if (response.status == 200)
             navigate(`/aluno/${response.data.id}`);
+
+        localStorage.removeItem('previousPage');
     };
 
     const handleBack = () => {
-        navigate(-1);
+        const previousPage = localStorage.getItem('previousPage');
+        if (previousPage) {
+            navigate(previousPage);
+        } else {
+            navigate("/home");
+        }
     };
 
     const handleDelete = async () => {
-        const response = await axiosPrivate.delete(`/alunos/${id}`, 
+        const response = await axiosPrivate.delete(`/alunos/${id}`,
             {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true
