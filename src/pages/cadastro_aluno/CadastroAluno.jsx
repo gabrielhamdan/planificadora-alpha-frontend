@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useNavigate, useParams } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 export default function CadastroAluno() {
     const { auth } = useAuth();
@@ -10,20 +14,18 @@ export default function CadastroAluno() {
     const ehNovoAluno = id && id === "0";
     const navigate = useNavigate();
 
-    const [aluno, setAluno] = useState(
-        {
-            nome: '',
-            cpf: '',
-            dataNascimento: '',
-            email: '',
-            telefone: '',
-            endereco: '',
-            nivel: 'Pós-Graduado',
-            situacao: 'ALUNO',
-            objetivoAprendizado: '',
-            professorId: auth.id
-        }
-    );
+    const [aluno, setAluno] = useState({
+        nome: '',
+        cpf: '',
+        dataNascimento: '',
+        email: '',
+        telefone: '',
+        endereco: '',
+        nivel: 'Pós-Graduado',
+        situacao: 'ALUNO',
+        objetivoAprendizado: '',
+        professorId: auth.id
+    });
 
     useEffect(() => {
         if (ehNovoAluno) return;
@@ -42,7 +44,6 @@ export default function CadastroAluno() {
                 if (err.name !== 'CanceledError')
                     console.error(err);
             }
-
         }
 
         getAluno();
@@ -64,11 +65,12 @@ export default function CadastroAluno() {
     const handleSubmit = async e => {
         e.preventDefault();
 
-        if (!ehNovoAluno)
+        if (!ehNovoAluno) {
             setAluno((prevAluno) => ({
                 ...prevAluno,
                 id: { id }
             }));
+        }
 
         const response = await axiosPrivate.post('/alunos',
             JSON.stringify(aluno),
@@ -78,10 +80,8 @@ export default function CadastroAluno() {
             }
         );
 
-        if (response.status == 200)
-            navigate(`/alunos/${response.data.id}`);
-
-        localStorage.removeItem('previousPage');
+        if (response.status === 200)
+            navigate("/alunos");
     };
 
     const handleBack = () => {
@@ -101,75 +101,167 @@ export default function CadastroAluno() {
             }
         );
 
-        if (response.status == 200)
+        if (response.status === 200)
             navigate("/home");
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Cadastro de Aluno</h2>
+        <section className='auth-bg'>
+            <div className="container py-5 h-100">
+                <div className="row d-flex justify-content-center align-items-center h-100">
+                    <div className="">
+                        <div className="card bg-dark text-white" style={{ width: '80%', margin: '0 auto' }}>
+                            <div className="card-body p-5 text-center">
+                                <h2 className="mb-4">Cadastro de Aluno</h2>
+                                <Form onSubmit={handleSubmit}>
+                                    <Row className="mb-3">
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Nome:</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="nome"
+                                                    value={aluno.nome}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>CPF:</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="cpf"
+                                                    value={aluno.cpf}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Data de Nascimento:</Form.Label>
+                                                <Form.Control
+                                                    type="date"
+                                                    name="dataNascimento"
+                                                    value={aluno.dataNascimento}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mb-3">
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Email:</Form.Label>
+                                                <Form.Control
+                                                    type="email"
+                                                    name="email"
+                                                    value={aluno.email}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Telefone:</Form.Label>
+                                                <Form.Control
+                                                    type="tel"
+                                                    name="telefone"
+                                                    value={aluno.telefone}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Endereço:</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="endereco"
+                                                    value={aluno.endereco}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mb-3">
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Nível:</Form.Label>
+                                                <Form.Select
+                                                    name="nivel"
+                                                    value={aluno.nivel}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                >
+                                                    <option value="Pós-Graduado">Pós-Graduado</option>
+                                                    <option value="Graduado">Graduado</option>
+                                                    <option value="Técnico">Técnico</option>
+                                                    <option value="Fundamental">Fundamental</option>
+                                                    <option value="Médio">Médio</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Situação:</Form.Label>
+                                                <Form.Select
+                                                    name="situacao"
+                                                    value={aluno.situacao}
+                                                    onChange={handleChange}
+                                                    required
+                                                    className='bg-dark text-white border-light'
+                                                >
+                                                    <option value="ALUNO">Aluno</option>
+                                                    <option value="EX_ALUNO">Ex-aluno</option>
+                                                    <option value="PROSPECCAO">Prospecção</option>
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mb-3">
+                                        <Col>
+                                            <Form.Group>
+                                                <Form.Label>Objetivo de Aprendizado:</Form.Label>
+                                                <Form.Control
+                                                    as="textarea"
+                                                    rows={4}
+                                                    name="objetivoAprendizado"
+                                                    value={aluno.objetivoAprendizado}
+                                                    onChange={handleChange}
+                                                    style={{ resize: 'none' }} // Impede o redimensionamento
+                                                    className='bg-dark text-white border-light'
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
 
-            <div>
-                <label htmlFor="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" value={aluno.nome} onChange={handleChange} required />
+                                    <Button type="submit" className='btn btn-outline-light btn-lg px-5 me-3'>Salvar</Button>
+
+                                    <Button type="button" className='btn btn-secondary btn-lg px-5 me-3' onClick={handleBack}>Voltar</Button>
+                                    {
+                                        !ehNovoAluno &&
+                                        <Button type="button" className='btn btn-danger btn-lg px-5 me-3' onClick={handleDelete}>Excluir</Button>
+                                    }
+                                </Form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div>
-                <label htmlFor="cpf">CPF:</label>
-                <input type="text" id="cpf" name="cpf" value={aluno.cpf} onChange={handleChange} required />
-            </div>
-
-            <div>
-                <label htmlFor="dataNascimento">Data de Nascimento:</label>
-                <input type="date" id="dataNascimento" name="dataNascimento" value={aluno.dataNascimento} onChange={handleChange} required />
-            </div>
-
-            <div>
-                <label htmlFor="email">Email:</label>
-                <input type="email" id="email" name="email" value={aluno.email} onChange={handleChange} required />
-            </div>
-
-            <div>
-                <label htmlFor="telefone">Telefone:</label>
-                <input type="tel" id="telefone" name="telefone" value={aluno.telefone} onChange={handleChange} required />
-            </div>
-
-            <div>
-                <label htmlFor="endereco">Endereço:</label>
-                <input type="text" id="endereco" name="endereco" value={aluno.endereco} onChange={handleChange} required />
-            </div>
-
-            <div>
-                <label htmlFor="nivel">Nível:</label>
-                <select id="nivel" name="nivel" value={aluno.nivel} onChange={handleChange} required>
-                    <option value="Pós-Graduado">Pós-Graduado</option>
-                    <option value="Graduado">Graduado</option>
-                    <option value="Técnico">Técnico</option>
-                    <option value="Fundamental">Fundamental</option>
-                    <option value="Médio">Médio</option>
-                </select>
-            </div>
-
-            <div>
-                <label htmlFor="situacao">Situação:</label>
-                <select id="situacao" name="situacao" value={aluno.situacao} onChange={handleChange} required>
-                    <option value="ALUNO">Aluno</option>
-                    <option value="EX_ALUNO">Ex-aluno</option>
-                    <option value="PROSPECCAO">Prospecção</option>
-                </select>
-            </div>
-
-            <div>
-                <label htmlFor="objetivoAprendizado">Objetivo de Aprendizado:</label>
-                <textarea id="objetivoAprendizado" name="objetivoAprendizado" rows="4" value={aluno.objetivoAprendizado} onChange={handleChange} ></textarea>
-            </div>
-
-            <button type="submit">Salvar</button>
-            <button type="button" onClick={handleBack}>Voltar</button>
-            {
-                !ehNovoAluno &&
-                <button type="button" onClick={handleDelete}>Excluir</button>
-            }
-        </form>
+        </section>
     )
 }

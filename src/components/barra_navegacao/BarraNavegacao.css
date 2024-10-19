@@ -3,6 +3,7 @@
     padding: 25px 75px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .nav a {
@@ -12,4 +13,20 @@
 
 .logo-icon {
     width: 50px;
+    transition: ease-in-out .01s;
+}
+
+.logo-icon:hover {
+    transform: scale(1.1);
+}
+
+.btn-logout {
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+.btn-logout:hover {
+    text-decoration: none;
+    cursor: pointer;
 }
