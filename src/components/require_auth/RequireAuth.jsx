@@ -1,5 +1,6 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import BarraNavegacao from "../barra_navegacao/BarraNavegacao";
 
 const RequireAuth = () => {
     const { auth } = useAuth();
@@ -7,7 +8,7 @@ const RequireAuth = () => {
 
     return (
         auth?.usuario
-            ? <Outlet />
+            ? <><BarraNavegacao /><Outlet /></>
             : <Navigate to="/login" state={{ from: location }} replace />
     );
 }

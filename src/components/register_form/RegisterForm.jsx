@@ -31,7 +31,7 @@ export default function RegisterForm(props) {
         setErrMsg('');
     }, [professor]);
 
-    const handlerSubmit = async e => {
+    const handleSubmit = async e => {
         e.preventDefault();
 
         try {
@@ -61,7 +61,7 @@ export default function RegisterForm(props) {
 
     return (
         <>
-            <Form onSubmit={handlerSubmit}>
+            <Form onSubmit={handleSubmit}>
                 <Form.Group className="form-outline form-white mb-4 form-group-container" >
                     <Form.Label>Usuário</Form.Label>
                     <Form.Control className='form-control form-control-lg bg-dark text-white border-light custom-placeholder'

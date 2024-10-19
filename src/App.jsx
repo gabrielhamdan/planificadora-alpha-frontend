@@ -4,9 +4,11 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import RequireAuth from './components/require_auth/RequireAuth';
 import Home from './pages/home/Home';
-import CadastroAluno from './pages/home/CadastroAluno';
+import CadastroAluno from './pages/cadastro_aluno/CadastroAluno';
 import { Navigate } from 'react-router-dom';
 import UserForm from './components/user_form/UserForm';
+import ListaAlunos from './pages/lista_alunos/ListaAlunos';
+import CadastroUsuario from './pages/cadastro_usuario/CadastroUsuario';
 
 function App() {
   return (
@@ -21,8 +23,10 @@ function App() {
 
           {/* rotas que requerem autenticação */}
           <Route element={<RequireAuth />} >
-            <Route path='home' element={<Home />} />
-            <Route path='aluno/:id' element={<CadastroAluno />} />
+              <Route path='home' element={<Home />} />
+              <Route path='alunos' element={<ListaAlunos />} />
+              <Route path='alunos/:id' element={<CadastroAluno />} />
+              <Route path='usuarios' element={<CadastroUsuario />} />
           </Route>
         </Route>
       </Routes>

@@ -41,14 +41,14 @@ export default function Alunos() {
     return (
         <article>
             <h2>Alunos</h2>
-            <Link to={"/aluno/0"} onClick={handleClick}>Novo aluno</Link>
+            <Link to={"/alunos/0"} onClick={handleClick}>Novo aluno</Link>
             {alunos?.length
                 ? (
                     <ul>
                         {/* HACK: testando novo aluno, passando id 0 */}
                         {
                             alunos.map((aluno, key) => {
-                                return <li key={key}><Link to={`/aluno/${aluno?.id}`}>{aluno?.nome}</Link></li>
+                                return <li key={key}><Link to={`/alunos/${aluno?.id}`}>{aluno?.nome}</Link></li>
                             })
                         }
                     </ul>

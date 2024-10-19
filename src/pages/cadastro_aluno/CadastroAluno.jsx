@@ -79,7 +79,7 @@ export default function CadastroAluno() {
         );
 
         if (response.status == 200)
-            navigate(`/aluno/${response.data.id}`);
+            navigate(`/alunos/${response.data.id}`);
 
         localStorage.removeItem('previousPage');
     };
