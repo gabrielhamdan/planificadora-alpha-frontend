@@ -1,0 +1,36 @@
+.item-link {
+    margin: 25px;
+}
+
+.item-menu-container {
+    background-color: #212529;
+    color: #7A8896;
+    width: 10vw;
+    height: 10vw;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: ease-in-out .2s;
+}
+
+.icone {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+.item-menu-container p {
+    font-size: 1.2rem;
+    line-height: 1;
+    margin-top: 15px;
+    max-width: 70%;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.item-menu-container:hover {
+    opacity: .8;
+}

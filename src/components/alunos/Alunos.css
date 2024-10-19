@@ -1,0 +1,11 @@
+.btn-excluir {
+    color: #BB2D3B;
+}
+
+.btn-excluir:hover {
+    cursor: pointer;
+}
+
+.btn-editar {
+    color: white;
+}

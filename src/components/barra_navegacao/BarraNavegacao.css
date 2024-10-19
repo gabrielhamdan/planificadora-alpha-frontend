@@ -1,0 +1,32 @@
+.nav {
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    padding: 25px 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav a {
+    color: #212529 !important;
+    font-size: 14pt;
+}
+
+.logo-icon {
+    width: 50px;
+    transition: ease-in-out .01s;
+}
+
+.logo-icon:hover {
+    transform: scale(1.1);
+}
+
+.btn-logout {
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+.btn-logout:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
