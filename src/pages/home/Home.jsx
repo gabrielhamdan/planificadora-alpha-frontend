@@ -8,7 +8,7 @@ export default function Home() {
             <div className="menu">
                 <ItemMenu label="Alunos" icone={faUsers} link="/alunos" />
                 <ItemMenu label="Aulas" icone={faPenToSquare} />
-                <ItemMenu label="Pacotes de Aula" icone={faFolder} />
+                <ItemMenu label="Pacotes de Aula" icone={faFolder} link="/pacotes" />
                 <ItemMenu label="Usuário" icone={faUser} link={`/usuarios`} />
             </div>
         </>

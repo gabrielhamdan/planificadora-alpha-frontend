@@ -9,6 +9,8 @@ import { Navigate } from 'react-router-dom';
 import UserForm from './components/user_form/UserForm';
 import ListaAlunos from './pages/lista_alunos/ListaAlunos';
 import CadastroUsuario from './pages/cadastro_usuario/CadastroUsuario';
+import ListaPacoteAula from './pages/lista_pacote_aula/ListaPacoteAula';
+import CadastroPacoteAula from './pages/cadastro_pacote_aula/CadastroPacoteAula';
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
               <Route path='alunos' element={<ListaAlunos />} />
               <Route path='alunos/:id' element={<CadastroAluno />} />
               <Route path='usuarios' element={<CadastroUsuario />} />
+              <Route path='pacotes' element={<ListaPacoteAula />} />
+              <Route path='pacotes/:id' element={<CadastroPacoteAula />} />
           </Route>
         </Route>
       </Routes>
