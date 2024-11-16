@@ -29,8 +29,9 @@ const inputParaMoeda = (valor) => {
 };
 
 const moedaParaReal = (valor) => {
-    console.log(valor)
-    return valor.replace('.', '').replace(',', '.').replace('R$', '');
-}
+    if (!valor) return 0;
+
+    return parseFloat(valor.replace('R$ ', '').replace('.', '').replace(',', '.'));
+};
 
 export { valorParaMoeda, inputParaMoeda, moedaParaReal }

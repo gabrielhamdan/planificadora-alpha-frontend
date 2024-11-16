@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useNavigate, useParams } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Dropdown, Form, Button, Row, Col } from 'react-bootstrap'
 import { inputParaMoeda, moedaParaReal } from '../../util/util.js'
+import { useDebouncedCallback } from 'use-debounce';
+import AulaPacote from "../../components/aula_pacote/AulaPacote.jsx";
 
 export default function CadastroPacoteAula() {
     const { auth } = useAuth();
@@ -15,50 +14,197 @@ export default function CadastroPacoteAula() {
     const ehNovoPacote = id && id === "0";
     const navigate = useNavigate();
 
-    const [localAula, setLocalAula] = useState({
-        descricaoLocal: '',
-        tipoLocal: 'ONLINE'
-    });
-
     const [pacote, setPacote] = useState({
         aluno: {},
         aulas: [],
-        localAula: localAula,
-        valorHoraAula: 0
+        localAula: { descricaoLocal: '', tipoLocal: 'ONLINE' },
+        valorHoraAula: 0,
+        professorId: auth.id
     });
+
+    const [valorHoraAula, setValorHoraAula] = useState("R$ 0,00")
+    const [searchTerm, setSearchTerm] = useState('');
+    const [alunos, setAlunos] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const buscarAlunos = async (term) => {
+        if (term.trim() === "") {
+            setAlunos([]);
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axiosPrivate.get(`/alunos/search`, {
+                params: { nome: term }
+            });
+
+            setAlunos(response.data);
+        } catch (error) {
+            console.error('Erro ao buscar alunos:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (ehNovoPacote) return;
+
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getPacote = async () => {
+            try {
+                const response = await axiosPrivate.get(`/pacote-aulas/${id}`, {
+                    signal: controller.signal
+                });
+
+                if (isMounted) {
+                    const pacoteData = response.data;
+                    setPacote({ ...pacoteData, valorHoraAula: parseFloat(pacoteData.valorHoraAula.toFixed(2)) });
+                    setValorHoraAula(inputParaMoeda(pacoteData.valorHoraAula.toFixed(2)));
+                    setSearchTerm(pacoteData.aluno.nome);
+                }
+            } catch (err) {
+                if (err.name !== 'CanceledError')
+                    console.error(err);
+            }
+        }
+
+        getPacote();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+    }, []);
+
+    const debouncedBuscarAlunos = useDebouncedCallback((term) => {
+        buscarAlunos(term);
+    }, 500);
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        debouncedBuscarAlunos(value);
+    };
+
+    const handleSelectAluno = (aluno) => {
+        setSearchTerm(aluno.nome);
+        setPacote((prev) => ({
+            ...prev,
+            aluno: aluno
+        }));
+        setAlunos([]);
+    };
 
     const handleSubmit = async e => {
         e.preventDefault();
-        console.log(pacote)
-        // TODO: Lógica de envio do formulário
-    }
+
+        let reqMethod = axiosPrivate.post
+
+        if (!ehNovoPacote) {
+            setPacote((prev) => ({
+                ...prev,
+                id: { id }
+            }));
+
+            reqMethod = axiosPrivate.put
+        }
+
+        pacote.aulas = pacote.aulas.map(aula => {
+            if (typeof aula.id === 'string' && aula.id.includes('temp-')) {
+                aula.id = 0;
+            }
+
+            if (aula.data !== "" && aula.data !== null) {
+                return aula;
+            }
+
+            return null;
+        }).filter(aula => aula !== null);
+
+        const response = await reqMethod('/pacote-aulas',
+            JSON.stringify(pacote),
+            {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            }
+        );
+
+        if (response.status === 200)
+            navigate("/pacotes");
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
         if (name === 'valorHoraAula') {
-            e.target.value = inputParaMoeda(value)
-            const rawValue = moedaParaReal(e.target.value)
+            const valueFloat = moedaParaReal(inputParaMoeda(value));
             setPacote((prev) => ({
                 ...prev,
-                valorHoraAula: rawValue,  // Salva como número sem formatação
+                valorHoraAula: valueFloat,
             }));
+            setValorHoraAula(inputParaMoeda(value));
         } else if (name === 'localAula.descricaoLocal') {
-            setLocalAula((prev) => ({
+            setPacote((prev) => ({
                 ...prev,
-                descricaoLocal: value,
+                localAula: {
+                    ...prev.localAula,
+                    descricaoLocal: value,
+                }
             }));
         } else if (name === 'localAula.tipoLocal') {
-            setLocalAula((prev) => ({
+            setPacote((prev) => ({
                 ...prev,
-                tipoLocal: value,
+                localAula: {
+                    ...prev.localAula,
+                    tipoLocal: value,
+                }
             }));
         }
     };
 
-    const handleDelete = () => {
-        console.log(pacote)
-    }
+    const handleAddAula = () => {
+        const novaAula = {
+            id: `temp-${Date.now()}`,
+            statusAula: 'AGENDADA',
+            data: '',
+            horaInicial: '',
+            horaFinal: '',
+            anotacoes: '',
+            pagamento: null,
+            tarefasDeCasa: ''
+        };
+
+        setPacote((prev) => ({
+            ...prev,
+            aulas: [...prev.aulas, novaAula]
+        }));
+    };
+
+    const handleAulaChange = (aulaId, fieldName, value) => {
+        setPacote(prev => ({
+            ...prev,
+            aulas: prev.aulas.map(aula =>
+                aula.id === aulaId ? { ...aula, [fieldName]: value } : aula
+            )
+        }));
+    };
+
+    const handleDelete = async () => {
+        if (!confirm("Tem certeza de que deseja remover este pacote?"))
+            return;
+
+        const response = await axiosPrivate.delete(`/pacote-aulas/${pacote.id}`,
+            {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            }
+        );
+
+        if (response.status === 200)
+            navigate("/pacotes");
+    };
 
     return (
         <section className='auth-bg'>
@@ -76,25 +222,40 @@ export default function CadastroPacoteAula() {
                                                 <Form.Control
                                                     type="text"
                                                     name="aluno"
-                                                    value={pacote.aluno.nome}
-                                                    onChange={handleChange} // TODO: handleChangeAluno para pegar o objeto
+                                                    value={searchTerm}
+                                                    onChange={handleSearchChange}
                                                     required
                                                     className='bg-dark text-white border-light'
+                                                    autoComplete="off"
                                                 />
+
+                                                {alunos.length > 0 && (
+                                                    <Dropdown.Menu show>
+                                                        {alunos.map((aluno) => (
+                                                            <Dropdown.Item
+                                                                key={aluno.id}
+                                                                onClick={() => handleSelectAluno(aluno)}
+                                                            >
+                                                                {aluno.nome}
+                                                            </Dropdown.Item>
+                                                        ))}
+                                                    </Dropdown.Menu>
+                                                )}
                                             </Form.Group>
                                         </Col>
                                     </Row>
                                     <Row className="mb-3">
-                                         <Col>
+                                        <Col>
                                             <Form.Group>
                                                 <Form.Label>Valor hora/aula:</Form.Label>
                                                 <Form.Control
                                                     type="text"
                                                     name="valorHoraAula"
-                                                    value=""
+                                                    value={valorHoraAula}
                                                     onChange={handleChange}
                                                     required
                                                     className='bg-dark text-white border-light'
+                                                    autoComplete="off"
                                                 />
                                             </Form.Group>
                                         </Col>
@@ -103,10 +264,11 @@ export default function CadastroPacoteAula() {
                                                 <Form.Label>Descrição local:</Form.Label>
                                                 <Form.Control
                                                     type="text"
-                                                    name="descricaoLocal"
-                                                    value={localAula.descricaoLocal}
-                                                    onChange={handleChange} // handleChangeLocal
+                                                    name="localAula.descricaoLocal"
+                                                    value={pacote.localAula.descricaoLocal}
+                                                    onChange={handleChange}
                                                     className='bg-dark text-white border-light'
+                                                    autoComplete="off"
                                                 />
                                             </Form.Group>
                                         </Col>
@@ -114,8 +276,8 @@ export default function CadastroPacoteAula() {
                                             <Form.Group>
                                                 <Form.Label>Tipo local:</Form.Label>
                                                 <Form.Select
-                                                    name="tipoLocal"
-                                                    value={localAula.tipoLocal}
+                                                    name="localAula.tipoLocal"
+                                                    value={pacote.localAula.tipoLocal}
                                                     onChange={handleChange}
                                                     required
                                                     className='bg-dark text-white border-light'
@@ -126,20 +288,24 @@ export default function CadastroPacoteAula() {
                                             </Form.Group>
                                         </Col>
                                     </Row>
+
                                     <Row className="mb-3">
                                         <Col>
                                             <Form.Group>
                                                 <Form.Label>Aulas:</Form.Label>
-                                                <Form.Control
-                                                    as="textarea"
-                                                    rows={4}
-                                                    name=""
-                                                    // value={aluno.objetivoAprendizado}
-                                                    onChange={handleChange}
-                                                    style={{ resize: 'none' }} // Impede o redimensionamento
-                                                    className='bg-dark text-white border-light'
-                                                />
                                             </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    {pacote.aulas.map(aula => (
+                                        <AulaPacote
+                                            key={aula.id}
+                                            aula={aula}
+                                            onChange={handleAulaChange}
+                                        />
+                                    ))}
+                                    <Row>
+                                        <Col className="text-start">
+                                            <Button className='btn-light mb-3 mt-3' style={{ width: 'auto' }} onClick={handleAddAula}>Adicionar aula</Button>
                                         </Col>
                                     </Row>
 

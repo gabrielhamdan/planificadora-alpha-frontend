@@ -37,17 +37,18 @@ export default function PacotesAula() {
     }, []);
 
     const handleDelete = async (id) => {
-        // const response = await axiosPrivate.delete(`/alunos/${id}`,
-        //     {
-        //         headers: { 'Content-Type': 'application/json' },
-        //         withCredentials: true
-        //     }
-        // );
+        if (!confirm("Tem certeza de que deseja remover este pacote?"))
+            return;
 
-        // if (response.status === 200)
-        //     navigate("/home");
+        const response = await axiosPrivate.delete(`/pacote-aulas/${id}`,
+            {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            }
+        );
 
-        console.log(pacotes[0])
+        if (response.status === 200)
+            setPacotes((prevPacotes) => prevPacotes.filter((pacote) => pacote.id !== id));
     };
 
     return (
