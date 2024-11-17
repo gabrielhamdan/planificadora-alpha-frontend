@@ -113,13 +113,11 @@ export default function CadastroPacoteAula() {
         }
 
         pacote.aulas = pacote.aulas.map(aula => {
-            if (typeof aula.id === 'string' && aula.id.includes('temp-')) {
+            if (typeof aula.id === 'string' && aula.id.includes('temp-'))
                 aula.id = 0;
-            }
 
-            if (aula.data !== "" && aula.data !== null) {
+            if (aula.data !== "" && aula.data !== null)
                 return aula;
-            }
 
             return null;
         }).filter(aula => aula !== null);
@@ -205,6 +203,14 @@ export default function CadastroPacoteAula() {
         if (response.status === 200)
             navigate("/pacotes");
     };
+
+    const handleRemoveAula = (id) => {
+        const pacoteAulas = pacote.aulas.filter(aula => aula.id != id);
+        setPacote((prev) => ({
+            ...prev,
+            aulas: pacoteAulas
+        }));
+    }
 
     return (
         <section className='auth-bg'>
@@ -301,6 +307,7 @@ export default function CadastroPacoteAula() {
                                             key={aula.id}
                                             aula={aula}
                                             onChange={handleAulaChange}
+                                            onRemove={handleRemoveAula}
                                         />
                                     ))}
                                     <Row>

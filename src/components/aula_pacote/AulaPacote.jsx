@@ -4,7 +4,7 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 
 export default function AulaPacote(props) {
     const handleRemove = () => {
-        console.log(props.aula.id);
+        props.onRemove(props.aula.id);
     };
 
     const handleInputChange = (e, field) => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Table from 'react-bootstrap/Table';
@@ -9,7 +9,6 @@ import { valorParaMoeda } from '../../util/util.js'
 export default function PacotesAula() {
     const [pacotes, setPacotes] = useState([]);
     const axiosPrivate = useAxiosPrivate();
-    const navigate = useNavigate();
 
     useEffect(() => {
         let isMounted = true;
